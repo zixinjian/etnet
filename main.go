@@ -34,7 +34,7 @@ func EchoFunc(conn net.Conn) {
 
 //initial listener and run
 func main() {
-	listener, err := net.Listen("tcp", "0.0.0.0:8088")
+	listener, err := net.Listen("tcp", "0.0.0.0:6666")
 	if err != nil {
 		fmt.Println("error listening:", err.Error())
 		os.Exit(1)
