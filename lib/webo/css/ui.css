@@ -1,0 +1,140 @@
+.navbar{
+    margin-bottom: 0;
+}
+
+/*.container-fluid{background-color: white}*/
+.form-horizontal{
+    background-color: white;
+    padding-top:15px;
+    padding-bottom: 5px;
+}
+
+.bootstrap-table .table, .bootstrap-table .table > tbody > tr > th, .bootstrap-table .table > tfoot > tr > th, .bootstrap-table .table > thead > tr > td, .bootstrap-table .table > tbody > tr > td, .bootstrap-table .table > tfoot > tr > td{
+    padding: 4px 8px 4px 8px !important;
+}
+.bootstrap-table{
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.fixed-table-container{
+    border-radius: 2px;
+    -webkit-border-radius: 2px;
+    background-color: white;
+}
+.fixed-table-container thead th .th-inner, .fixed-table-container tbody td .th-inner{
+    padding: 4px 8px 4px 8px !important;
+}
+
+.bootstrap-table .fixed-table-footer tbody > tr > td {
+    padding: 0 !important;
+}
+
+.fixed-table-footer .th-inner p{
+    margin: 0;
+}
+.fixed-table-footer .th-inner .btn-sm{
+    padding:3px 5px 3px 5px;
+}
+
+.fixed-table-toolbar .bars, .fixed-table-toolbar .search, .fixed-table-toolbar .columns{
+    margin-bottom: 10px;
+    margin-top : 10px;
+}
+.fixed-table-toolbar .toolbar{
+    margin-bottom: 0;
+}
+
+
+
+
+#page_message {
+    display: none;
+    font-size: 14px;
+    overflow: visible;
+    text-align: center;
+    left: 0;
+    top: 2px;
+    /* place over all elements, also over modals */
+    z-index: 10001;
+    width: 70%;
+    border-bottom: 1px solid;
+    color: white;
+    padding: 10px;
+    position: fixed;
+}
+
+.page_mess_error {
+    background-color: #de4343;
+    border-color: #ca2424;
+}
+
+.page_mess_ok {
+    background-color: #48bb5e;
+    border-color: #38984b;
+}
+
+.page_mess_animate {
+    background-image: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent);
+    background-image: -moz-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent);
+    background-image: -o-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent);
+    -webkit-background-size: 10px 10px;
+    -moz-background-size: 10px 10px;
+    -o-background-size: 10px 10px;
+    background-size: 10px 10px;
+    -webkit-animation: animate-bg 3s linear infinite;
+    -moz-animation: animate-bg 3s linear infinite;
+    -ms-animation: animate-bg 3s linear infinite;
+    -o-animation: animate-bg 3s linear infinite;
+    animation: animate-bg 3s linear infinite;
+}
+
+@-moz-keyframes animate-bg {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: -20px 0;
+    }
+}
+
+@-webkit-keyframes animate-bg {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: -20px 0;
+    }
+}
+
+@-o-keyframes animate-bg {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: -20px 0;
+    }
+}
+
+@-ms-keyframes animate-bg {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: -20px 0;
+    }
+}
+
+@keyframes animate-bg {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: -20px 0;
+    }
+}
