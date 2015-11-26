@@ -10,7 +10,7 @@ import (
 
 func initDb() {
 	orm.RegisterDriver("sqlite", orm.DR_Sqlite)
-	orm.RegisterDataBase("default", "sqlite3", "db/frame.sqlite3")
+	orm.RegisterDataBase("default", "sqlite3", "data/db/main.db")
 	orm.Debug = true
 }
 

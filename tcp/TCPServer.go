@@ -6,6 +6,11 @@ import (
 	"os"
 	"time"
 	"etnet/tcp/modbus"
+	"wb/om"
+	"etnet/models/s"
+	"github.com/astaxie/beego"
+	"wb/cc"
+	"wb/st"
 )
 
 const (
@@ -19,22 +24,23 @@ const (
 )
 
 
-func GetStatus(conn net.Conn){
-	mapValue := make(map[string]interface{})
-	modbus.GetRegisters(mapValue, conn, 40001, 14, 2)
-	modbus.GetRegister(mapValue, conn, 40023)
-	modbus.GetRegisters(mapValue, conn, 40051, 6, 2)
-	modbus.GetRegisters(mapValue, conn, 40062, 2, 2)
-	modbus.GetRegister(mapValue, conn, 40065)
-	modbus.GetRegisters(mapValue, conn, 40067, 2, 1)
-	modbus.GetRegisters(mapValue, conn, 40071, 2, 2)
-	modbus.GetRegisters(mapValue, conn, 40079, 2, 1)
-	modbus.GetRegister(mapValue, conn, 43001)
-	modbus.GetRegister(mapValue, conn, 43004)
-	modbus.GetRegister(mapValue, conn, 43005)
-	modbus.GetRegister(mapValue, conn, 43010)
-	modbus.GetRegister(mapValue, conn, 43012)
-	fmt.Println(len(mapValue), mapValue)
+func GetStatus(conn net.Conn) (string, map[string]interface{}){
+	vMap := make(map[string]interface{})
+	modbus.GetRegisters(vMap, conn, 40001, 14, 2)
+	modbus.GetRegister(vMap, conn, 40023)
+	modbus.GetRegisters(vMap, conn, 40051, 6, 2)
+	modbus.GetRegisters(vMap, conn, 40062, 2, 2)
+	modbus.GetRegister(vMap, conn, 40065)
+	modbus.GetRegisters(vMap, conn, 40067, 2, 1)
+	modbus.GetRegisters(vMap, conn, 40071, 2, 2)
+	modbus.GetRegisters(vMap, conn, 40079, 2, 1)
+	modbus.GetRegister(vMap, conn, 43001)
+	modbus.GetRegister(vMap, conn, 43004)
+	modbus.GetRegister(vMap, conn, 43005)
+	modbus.GetRegister(vMap, conn, 43010)
+	modbus.GetRegister(vMap, conn, 43012)
+//	fmt.Println(len(mapValue), mapValue)
+	return st.Success, vMap
 }
 func SendCmd(cmd int) {
 	fmt.Println("Cmd: ", cmd)
@@ -50,7 +56,11 @@ func EchoFunc(mConn MCon) {
 			SendCmd(cmd)
 		case <- time.After(20 * time.Second):
 		}
-		GetStatus(conn)
+		status, vMap := GetStatus(conn)
+		if status == st.Success{
+			vMap[cc.Sn] = mConn.Id
+			om.AddValueMap(s.Status, vMap)
+		}
 	}
 }
 
@@ -80,11 +90,11 @@ func ServerRun() {
 	listener, err := net.Listen("tcp", "0.0.0.0:" + port)
 
 	if err != nil {
-		fmt.Println("error listening:", err.Error())
+		beego.Error("error listening:", err.Error())
 		os.Exit(1)
 	}
 	defer listener.Close()
-	fmt.Println("TcpServer Running on :", port)
+	beego.Info("TcpServer Running on :", port)
 
 	var cur_conn_num int = 0
 	conn_chan := make(chan MCon)

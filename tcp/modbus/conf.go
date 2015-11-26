@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"encoding/csv"
-	"wb/u"
+	"wb/ut"
 )
 
 const(
@@ -33,31 +33,31 @@ func init(){
 	r2 := csv.NewReader(strings.NewReader(string(cntb)))
 	rows, _ := r2.ReadAll()
 //	fmt.Println(rows)
-	for i, row := range rows{
-		fmt.Println(i, row)
-		register, err:=u.StrTo(strings.TrimSpace(row[registerCol])).Int32()
+	for _, row := range rows{
+//		fmt.Println(i, row)
+		register, err:= ut.StrTo(strings.TrimSpace(row[registerCol])).Int32()
 		if err != nil{
 //			fmt.Println("row:", i, " to int32 error")
 			continue
 		}
-		retLen, err := u.StrTo(strings.TrimSpace(row[retLenCol])).Int16()
+		retLen, err := ut.StrTo(strings.TrimSpace(row[retLenCol])).Int16()
 		if err != nil{
 			continue
 		}
-		len, err := u.StrTo(strings.TrimSpace(row[lenCol])).Int16()
+		len, err := ut.StrTo(strings.TrimSpace(row[lenCol])).Int16()
 		if err != nil{
 			continue
 		}
-		dec, err := u.StrTo(strings.TrimSpace(row[decCol])).Int16()
+		dec, err := ut.StrTo(strings.TrimSpace(row[decCol])).Int16()
 		if err != nil{
 			continue
 		}
 		name := strings.TrimSpace(row[nameCol])
 		dim := strings.TrimSpace(row[dimCol])
 		key := strings.TrimSpace(row[keyCol])
-
+//		fmt.Println(key, "integer, " )
 		var mType MType
-		switch u.StrTo(strings.TrimSpace(row[typeCol])) {
+		switch ut.StrTo(strings.TrimSpace(row[typeCol])) {
 		case "Integer":
 			mType = Integer
 		case "Unsigned":
@@ -75,6 +75,7 @@ func init(){
 		default:
 			continue
 		}
+
 		MoMap[register]=Mo{Register:register, Name:name, Dim:dim, Type:mType, Len:len, RetLen:retLen, Dec:dec, Key:key}
 	}
 	fmt.Println("Read ", len(MoMap), "Mos")

@@ -2,7 +2,7 @@ package modbus
 import (
 	"fmt"
 	"net"
-	"wb/u"
+	"wb/ut"
 	"encoding/binary"
 	"bytes"
 )
@@ -31,7 +31,6 @@ type Mo struct {
 	Len         int16
 	RetLen	    int16
 }
-
 
 
 const (
@@ -98,13 +97,13 @@ func (this *Mo)GetValue(bs []byte)interface{}{
 const register0 = 40001
 func BuildReadRequest(start int32, len int16)([]byte){
 	startR := start -  register0
-	bsStart := u.Int16ToBytes(int16(startR))
-	bsLen := u.Int16ToBytes(len)
+	bsStart := ut.Int16ToBytes(int16(startR))
+	bsLen := ut.Int16ToBytes(len)
 	req := []byte{0x01, 0x03, bsStart[0], bsStart[1], bsLen[0], bsLen[1]}
 	csc := Crc16(req)
 	req = append(req, csc[1])
 	req = append(req, csc[0])
-	fmt.Println("Request is :", u.BytesToHex(req))
+	fmt.Println("Request is :", ut.BytesToHex(req))
 	return req
 }
 
@@ -130,7 +129,7 @@ func GetRegisterBytes(conn net.Conn, start int32, len int16)([]byte, error){
 		fmt.Println("Error receive re:", err.Error())
 		return []byte{}, err
 	}
-	fmt.Println("Receive", u.BytesToHex(buf[0:i]))
+	fmt.Println("Receive", ut.BytesToHex(buf[0:i]))
 	return buf[0:i], nil
 }
 func GetRegister(mapValue map[string]interface{}, conn net.Conn, start int32){
@@ -140,7 +139,7 @@ func GetRegister(mapValue map[string]interface{}, conn net.Conn, start int32){
 			return
 		}
 		vBytes := bs[3:3+mo.RetLen]
-		fmt.Println("Read reg:", start, " ", u.BytesToHex(vBytes))
+		fmt.Println("Read reg:", start, " ", ut.BytesToHex(vBytes))
 		mapValue[mo.Key] = mo.GetValue(vBytes)
 	}
 }
@@ -155,7 +154,7 @@ func GetRegisters(mapValue map[string]interface{}, conn net.Conn, start int32, l
 		r := start + int32(i)
 		if mo, ok := MoMap[int32(r)];ok{
 			vBytes := bs[3+i*retLen:3+i*retLen+retLen]
-			fmt.Println("Read reg:", r, " ", u.BytesToHex(vBytes))
+			fmt.Println("Read reg:", r, " ", ut.BytesToHex(vBytes))
 			mapValue[mo.Key] = mo.GetValue(vBytes)
 		}else {
 			continue

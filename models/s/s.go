@@ -8,3 +8,9 @@ const(
 	LocX= "locX"
 	LocY= "locY"
 )
+
+
+const(
+	Sn	   = "sn"
+	Status = "status"
+)
