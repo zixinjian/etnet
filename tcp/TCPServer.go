@@ -86,7 +86,7 @@ func (this *MCon) SendCmd(cmd int){
 }
 
 func ServerRun() {
-	port := "9171"
+	port := beego.AppConfig.String("tcpport")
 	listener, err := net.Listen("tcp", "0.0.0.0:" + port)
 
 	if err != nil {
