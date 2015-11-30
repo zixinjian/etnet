@@ -11,6 +11,8 @@ import (
 	"github.com/astaxie/beego"
 	"wb/cc"
 	"wb/st"
+	"encoding/binary"
+	"wb/ut"
 )
 
 const (
@@ -59,24 +61,27 @@ func EchoFunc(mConn MCon) {
 		status, vMap := GetStatus(conn)
 		if status == st.Success{
 			vMap[cc.Sn] = mConn.Id
+			vMap[cc.CreateTime] = ut.GetCreateTime()
+			fmt.Println(time.Now().String())
 			om.AddValueMap(s.Status, vMap)
 		}
 	}
 }
 
-func ReadId(conn net.Conn) string{
+func ReadId(conn net.Conn) int64{
 	buf := make([]byte, 1024)
 	i, err := conn.Read(buf)
 	if err != nil {
 		println("Error receive Id:", err.Error())
-		return ""
+		return 0
 	}
-	fmt.Println("Receive Id:", i, string(buf[0:i]))
-	return string(buf[0:i])
+	id := int64(binary.BigEndian.Uint64(buf[0:i]))
+	fmt.Println("Receive Id:", i, id)
+	return id
 }
 
 type MCon struct {
-	Id   string
+	Id   int64
 	Conn net.Conn
 	CmdCh chan int
 }
@@ -99,7 +104,7 @@ func ServerRun() {
 	var cur_conn_num int = 0
 	conn_chan := make(chan MCon)
 	ch_conn_change := make(chan int)
-	mapConn := make(map[string] MCon)
+	mapConn := make(map[int64] MCon)
 
 	go func() {
 		for conn_change := range ch_conn_change {

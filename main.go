@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego"
 	"etnet/tcp"
 	"github.com/astaxie/beego/orm"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 
@@ -16,6 +17,7 @@ func initDb() {
 
 func main() {
 	go tcp.ServerRun()
+	initDb()
 	beego.Run()
 }
 

@@ -11,6 +11,5 @@ const(
 
 
 const(
-	Sn	   = "sn"
 	Status = "status"
 )
