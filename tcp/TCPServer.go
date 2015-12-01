@@ -6,13 +6,12 @@ import (
 	"os"
 	"time"
 	"etnet/tcp/modbus"
-	"wb/om"
-	"etnet/models/s"
 	"github.com/astaxie/beego"
 	"wb/cc"
 	"wb/st"
 	"encoding/binary"
 	"wb/ut"
+	"etnet/models/statusMgr"
 )
 
 const (
@@ -41,7 +40,9 @@ func GetStatus(conn net.Conn) (string, map[string]interface{}){
 	modbus.GetRegister(vMap, conn, 43005)
 	modbus.GetRegister(vMap, conn, 43010)
 	modbus.GetRegister(vMap, conn, 43012)
-//	fmt.Println(len(mapValue), mapValue)
+	if len(vMap) < len(modbus.MoMap){
+		return st.Failed, nil
+	}
 	return st.Success, vMap
 }
 func SendCmd(cmd int) {
@@ -62,20 +63,27 @@ func EchoFunc(mConn MCon) {
 		if status == st.Success{
 			vMap[cc.Sn] = mConn.Id
 			vMap[cc.CreateTime] = ut.GetCreateTime()
-			fmt.Println(time.Now().String())
-			om.AddValueMap(s.Status, vMap)
+			fmt.Println(vMap)
+			statusMgr.AddStatus(vMap)
 		}
 	}
 }
 
 func ReadId(conn net.Conn) int64{
-	buf := make([]byte, 1024)
+	buf := make([]byte, 128)
 	i, err := conn.Read(buf)
 	if err != nil {
 		println("Error receive Id:", err.Error())
 		return 0
 	}
-	id := int64(binary.BigEndian.Uint64(buf[0:i]))
+	ids := []byte{0, 0, 0, 0, 0, 0, 0, 0}
+	if i > 8{
+		i = 8
+	}
+	for idx, v := range buf[0:i]{
+		ids[idx + 8 -i ] = v
+	}
+	id := int64(binary.BigEndian.Uint64(ids))
 	fmt.Println("Receive Id:", i, id)
 	return id
 }

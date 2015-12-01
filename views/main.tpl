@@ -71,7 +71,7 @@
                             <span>设备列表</span>
                         </li>
                         <li>
-                            <a href="/device?sn=1234" target="main" class="auto">
+                            <a href="/device?sn=10001" target="main" class="auto">
                                 <i class="fa fa-truck text-success-lter"></i>
                                 <span>应急电源车A</span>
                             </a>
@@ -123,7 +123,7 @@
     </aside>
     <!-- / aside -->
     <div id="content" class="app-content" role="main">
-        <iframe class="bg-light " name="main" src="/gis" layout-auto-height="-50" style="width:100%;border:none"></iframe>
+        <iframe class="bg-light " name="main" src="/device?sn=10001" layout-auto-height="-50" style="width:100%;border:none"></iframe>
     </div>
 </div>
 <script src="../lib/app/js/app.min.js"></script>

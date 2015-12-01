@@ -9,15 +9,13 @@
     <link rel="stylesheet" href="../../lib/font-awesome/css/font-awesome.min.css" type="text/css" />
     <link rel="stylesheet" href="../../lib/app/css/app.min.css" type="text/css" />
     <link rel="stylesheet" href="../../lib/bootstrap-table/bootstrap-table.css">
-
-    <!--<link rel="stylesheet" href="../../lib/datatables/css/dataTables.bootstrap.css">-->
 </head>
 <body>
 <div class="app">
     <div class="bg-light lter b-b wrapper-md">
         <div class="row">
             <div class="col-sm-3 col-xs-6">设备: {{.DeviceName}}[ID:{{.DeviceId}}]</div>
-            <div class="pull-right m-r">当前状态:<i class="fa fa-circle-o text-info"></i>待机
+            <div class="pull-right m-r">当前状态:<i class="fa fa-circle-o text-info"></i>
                 <a class="btn btn-success btn-sm m-l-lg">启动</a>
                 <a class="btn btn-danger btn-sm">停止</a>
                 <a class="btn btn-info btn-sm" id="btnShowPosition" data-toggle="collapse" data-target="#position"><i class="icon-pointer"></i>查看位置</a>
@@ -251,7 +249,7 @@ function setLocation(x, y){
 function refreshData(){
     $.post("/device/params",
             {
-                sn:"1234"
+                sn:"{{.DeviceId}}"
             },
             function(data,status){
                 console.log("adat", data,$("positionContent").is(":visible"))
@@ -272,6 +270,7 @@ $(function(){
     showAChart()
     showPChart()
     showPostion(116.404, 39.915)
+    refreshData()
     $('#historyTable').bootstrapTable();
     setInterval(function(){
         refreshData()
