@@ -25,3 +25,8 @@ func GetStatus(sn int64)map[string]interface{}{
 	}
 	return make(map[string]interface{})
 }
+
+func RemoveStatus(sn int64){
+	delete(statusCache, sn)
+	return
+}

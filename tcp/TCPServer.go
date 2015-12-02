@@ -25,31 +25,31 @@ const (
 )
 
 
-func GetStatus(conn net.Conn) (string, map[string]interface{}){
-	vMap := make(map[string]interface{})
-	modbus.GetRegisters(vMap, conn, 40001, 14, 2)
-	modbus.GetRegister(vMap, conn, 40023)
-	modbus.GetRegisters(vMap, conn, 40051, 6, 2)
-	modbus.GetRegisters(vMap, conn, 40062, 2, 2)
-	modbus.GetRegister(vMap, conn, 40065)
-	modbus.GetRegisters(vMap, conn, 40067, 2, 1)
-	modbus.GetRegisters(vMap, conn, 40071, 2, 2)
-	modbus.GetRegisters(vMap, conn, 40079, 2, 1)
-	modbus.GetRegister(vMap, conn, 43001)
-	modbus.GetRegister(vMap, conn, 43004)
-	modbus.GetRegister(vMap, conn, 43005)
-	modbus.GetRegister(vMap, conn, 43010)
-	modbus.GetRegister(vMap, conn, 43012)
-	if len(vMap) < len(modbus.MoMap){
+func GetStatus(mConn *modbus.MConn) (string, map[string]interface{}){
+	statusMap := make(map[string]interface{})
+	mConn.GetRegisters(statusMap, 40001, 14, 2)
+	mConn.GetRegister(statusMap, 40023)
+	mConn.GetRegisters(statusMap, 40051, 6, 2)
+	mConn.GetRegisters(statusMap, 40062, 2, 2)
+	mConn.GetRegister(statusMap, 40065)
+	mConn.GetRegisters(statusMap, 40067, 2, 1)
+	mConn.GetRegisters(statusMap, 40071, 2, 2)
+	mConn.GetRegisters(statusMap, 40079, 2, 1)
+	mConn.GetRegister(statusMap, 43001)
+	mConn.GetRegister(statusMap, 43004)
+	mConn.GetRegister(statusMap, 43005)
+	mConn.GetRegister(statusMap, 43010)
+	mConn.GetRegister(statusMap, 43012)
+	if len(statusMap) < len(modbus.MoMap){
 		return st.Failed, nil
 	}
-	return st.Success, vMap
+	return st.Success, statusMap
 }
 func SendCmd(cmd int) {
 	fmt.Println("Cmd: ", cmd)
 }
 //echo server Goroutine
-func EchoFunc(mConn MCon) {
+func EchoFunc(mConn modbus.MConn) {
 	conn := mConn.Conn
 	cmdChan := mConn.CmdCh
 	defer conn.Close()
@@ -59,14 +59,19 @@ func EchoFunc(mConn MCon) {
 			SendCmd(cmd)
 		case <- time.After(20 * time.Second):
 		}
-		status, vMap := GetStatus(conn)
+		status, vMap := GetStatus(&mConn)
 		if status == st.Success{
 			vMap[cc.Sn] = mConn.Id
 			vMap[cc.CreateTime] = ut.GetCreateTime()
 			fmt.Println(vMap)
 			statusMgr.AddStatus(vMap)
 		}
+		if mConn.IsConnected == false{
+			break
+		}
 	}
+	statusMgr.RemoveStatus(mConn.Id)
+	fmt.Println("Close connect for id: ", mConn.Id)
 }
 
 func ReadId(conn net.Conn) int64{
@@ -88,15 +93,6 @@ func ReadId(conn net.Conn) int64{
 	return id
 }
 
-type MCon struct {
-	Id   int64
-	Conn net.Conn
-	CmdCh chan int
-}
-
-func (this *MCon) SendCmd(cmd int){
-	this.CmdCh <- cmd
-}
 
 func ServerRun() {
 	port := beego.AppConfig.String("tcpport")
@@ -110,9 +106,9 @@ func ServerRun() {
 	beego.Info("TcpServer Running on :", port)
 
 	var cur_conn_num int = 0
-	conn_chan := make(chan MCon)
+	conn_chan := make(chan modbus.MConn)
 	ch_conn_change := make(chan int)
-	mapConn := make(map[int64] MCon)
+	mapConn := make(map[int64] modbus.MConn)
 
 	go func() {
 		for conn_change := range ch_conn_change {
@@ -147,7 +143,7 @@ func ServerRun() {
 			return
 		}
 		id := ReadId(conn)
-		mConn := MCon{Id:id, Conn:conn, CmdCh:make(chan int)}
+		mConn := modbus.MConn{Id:id, Conn:conn, CmdCh:make(chan int), IsConnected:true}
 		mapConn[id]=mConn
 		conn_chan <- mConn
 	}

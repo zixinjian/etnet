@@ -17,10 +17,22 @@
 
 <body>
 <div id="container"></div>
+<script src="../../lib/app/js/app.min.js"></script>
 <script type="text/javascript">
-    var map = new BMap.Map("container");          // 创建地图实例
-    var point = new BMap.Point(116.404, 39.915);  // 创建点坐标
-    map.centerAndZoom(point, 15);                 // 初始化地图，设置中心点坐标和地图级别
+    function showPostion(x, y){
+        map = new BMap.Map("container");          // 创建地图实例
+        map.addControl(new BMap.NavigationControl());
+        map.addControl(new BMap.ScaleControl());
+        map.addControl(new BMap.OverviewMapControl());
+        map.addControl(new BMap.MapTypeControl());
+        var point = new BMap.Point(x, y);  // 创建点坐标
+        map.centerAndZoom(point, 10);
+        var marker = new BMap.Marker(point);        // 创建标注
+        map.addOverlay(marker);                     // 将标注添加到地图中
+    }
+    $(function(){
+        showPostion(116.4821,35.7107)
+    })
 </script>
 </body>
 </html>

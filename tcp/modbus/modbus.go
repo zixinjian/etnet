@@ -92,7 +92,25 @@ func (this *Mo)GetValue(bs []byte)interface{}{
 	}
 	return 0
 }
+//func (this *Mo)GetMoValue(mConn MConn)(interface{}, error){
+//	bs, err := mConn.GetRegisterBytes(this.Register, this.Len)
+//	if err != nil{
+//		return "", err
+//	}
+//	return this.GetValue(bs[dataStart:dataStart+this.RetLen]), nil
+//}
 
+type MConn struct {
+	Conn net.Conn
+	Id   int64
+	CmdCh chan int
+	IsConnected bool
+}
+
+
+func (this *MConn) SendCmd(cmd int){
+	this.CmdCh <- cmd
+}
 
 const register0 = 40001
 func BuildReadRequest(start int32, len int16)([]byte){
@@ -107,46 +125,42 @@ func BuildReadRequest(start int32, len int16)([]byte){
 	return req
 }
 
-func (this *Mo)GetMoValue(conn net.Conn)(interface{}, error){
-	bs, err := GetRegisterBytes(conn, this.Register, this.Len)
-	if err != nil{
-		return "", err
-	}
-	return this.GetValue(bs[dataStart:dataStart+this.RetLen]), nil
-}
-
-func GetRegisterBytes(conn net.Conn, start int32, len int16)([]byte, error){
+func (mConn *MConn)GetRegisterBytes(start int32, len int16)([]byte, error){
 	req := BuildReadRequest(start, len)
-	_, err := conn.Write(req)
+	_, err := mConn.Conn.Write(req)
 	if err != nil {
 		fmt.Println("Error send cmd:", err.Error())
+		mConn.IsConnected = false
+//		panic("network broken")
 		return []byte{}, err
 	}
 
 	buf := make([]byte, 1024)
-	i, err := conn.Read(buf)
+	i, err := mConn.Conn.Read(buf)
 	if err != nil {
 		fmt.Println("Error receive re:", err.Error())
+		mConn.IsConnected = false
+//		panic("network broken")
 		return []byte{}, err
 	}
-	fmt.Println("Receive", ut.BytesToHex(buf[0:i]))
+//	fmt.Println("Receive", ut.BytesToHex(buf[0:i]))
 	return buf[0:i], nil
 }
-func GetRegister(mapValue map[string]interface{}, conn net.Conn, start int32){
+func (mConn *MConn)GetRegister(mapValue map[string]interface{}, start int32){
 	if mo, ok := MoMap[start];ok{
-		bs, err:= GetRegisterBytes(conn, start, mo.Len)
+		bs, err:= mConn.GetRegisterBytes(start, mo.Len)
 		if err!= nil{
 			return
 		}
 		vBytes := bs[3:3+mo.RetLen]
-		fmt.Println("Read reg:", start, " ", ut.BytesToHex(vBytes))
+//		fmt.Println("Read reg:", start, " ", ut.BytesToHex(vBytes))
 		mapValue[mo.Key] = mo.GetValue(vBytes)
 	}
 }
 
 // 只适合连续的寄存器，并且结果位数相同
-func GetRegisters(mapValue map[string]interface{}, conn net.Conn, start int32, len int16, retLen int16){
-	bs , err:= GetRegisterBytes(conn, start, len)
+func (mConn *MConn)GetRegisters(mapValue map[string]interface{}, start int32, len int16, retLen int16){
+	bs , err:= mConn.GetRegisterBytes(start, len)
 	if err!= nil{
 		return
 	}
