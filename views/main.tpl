@@ -71,9 +71,9 @@
                             <span>设备列表</span>
                         </li>
                         <li>
-                            <a href="/device?sn=10001" target="main" class="auto">
+                            <a href="/device?sn=211261861937" target="main" class="auto">
                                 <i class="fa fa-truck text-success-lter"></i>
-                                <span>应急电源车A</span>
+                                <span>发电机组实际</span>
                             </a>
                         </li>
                         <li>
@@ -87,26 +87,26 @@
                             </a>
                             <ul class="nav nav-sub dk">
                                 <li>
-                                    <a href="/ui/purchase/buyertimely" target="main">
+                                    <a href="/device?sn=211261861937"target="main">
                                         <span>发电机组A</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="/ui/purchase/producttimely" target="main">
+                                    <a href="/device?sn=211261861937"  target="main">
                                         <span>500W</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="/ui/purchase/suppliertimely" target="main">
+                                    <a href="/device?sn=211261861937"  target="main">
                                         <span>5500W</span>
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         <li>
-                            <a href="/ui/expense/list" target="main" class="auto">
+                            <a href="/device?sn=10001"  target="main" class="auto">
                                 <i class="glyphicon-send text-success-lter"></i>
-                                <span>雾霾炮</span>
+                                <span>发电机组模拟</span>
                             </a>
                         </li>
                         <li>
@@ -123,7 +123,7 @@
     </aside>
     <!-- / aside -->
     <div id="content" class="app-content" role="main">
-        <iframe class="bg-light " name="main" src="/device?sn=10001" layout-auto-height="-50" style="width:100%;border:none"></iframe>
+        <iframe class="bg-light " name="main" src="/device?sn=211261861937" layout-auto-height="-50" style="width:100%;border:none"></iframe>
     </div>
 </div>
 <script src="../lib/app/js/app.min.js"></script>

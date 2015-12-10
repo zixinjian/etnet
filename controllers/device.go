@@ -5,6 +5,9 @@ import (
 	"etnet/models/statusMgr"
 	"wb/ut"
 	"wb/cc"
+	"etnet/models/s"
+	"etnet/models/device"
+	"fmt"
 )
 
 
@@ -39,4 +42,22 @@ func (c *DeviceController)GetStatus(){
 	}
 	c.Data["json"] = statusMgr.GetStatus(iSn)
 	c.ServeJson()
+}
+func (c *DeviceController)Operate(){
+	sn := c.GetString(cc.Sn)
+	if sn==""{
+		beego.Error("Operate ", st.ParamSnIsNone)
+		c.Ctx.WriteString("{}")
+		return
+	}
+	iSn, err := ut.StrTo(sn).Int64()
+	if err != nil{
+		beego.Error("Operate ", st.SnError)
+		c.Ctx.WriteString("{}")
+		return
+	}
+	operate := c.GetString(s.Operate)
+	fmt.Println("sn", sn, "op", operate)
+	stat := device.SendCmd(iSn, operate)
+	c.Ctx.WriteString(stat)
 }

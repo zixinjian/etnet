@@ -5,8 +5,8 @@ type BaseController struct {
 	beego.Controller
 }
 
-//func (c *DeviceController) SendJsonError(e string) {
-//	c.Data["json"] = e
-//	c.ServeJson()
-//}
+func (c *DeviceController) SendJson(jsonObject interface{}) {
+	c.Data["json"] = &jsonObject
+	c.ServeJson()
+}
 

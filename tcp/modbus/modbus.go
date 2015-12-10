@@ -5,6 +5,7 @@ import (
 	"wb/ut"
 	"encoding/binary"
 	"bytes"
+	"errors"
 )
 
 const (
@@ -103,13 +104,45 @@ func (this *Mo)GetValue(bs []byte)interface{}{
 type MConn struct {
 	Conn net.Conn
 	Id   int64
-	CmdCh chan int
+	CmdCh chan string
 	IsConnected bool
 }
 
+const (
+	StartCmd = "start"
+ 	StopCmd = "stop"
+)
+func (this *MConn) SendCmd(cmd string)([]byte, error){
+	switch cmd {
+	case StartCmd:
+		req := []byte{0x01, 0x10, 0x18, 0xD6, 0x00, 0x03, 0x06, 0x01, 0xFE, 0x00, 0x00, 0x00, 0x01}
+		return this.WriteReq(req)
+	case StopCmd:
+		req := []byte{0x01, 0x10, 0x18, 0xD6, 0x00, 0x03, 0x06, 0x02, 0xFD, 0x00, 0x00, 0x00, 0x01}
+		return this.WriteReq(req)
+	}
+	return make([]byte, 0), errors.New("No cmd name : " + cmd)
+}
 
-func (this *MConn) SendCmd(cmd int){
-	this.CmdCh <- cmd
+func (this *MConn) WriteReq(req []byte)([]byte, error){
+	req = AppendCrc(req)
+	_, err := this.Conn.Write(req)
+	if err != nil {
+		fmt.Println("Error send cmd:", err.Error())
+		this.IsConnected = false
+		//		panic("network broken")
+		return []byte{}, err
+	}
+	buf := make([]byte, 1024)
+	i, err := this.Conn.Read(buf)
+	if err != nil {
+		fmt.Println("Error receive re:", err.Error())
+		this.IsConnected = false
+		//		panic("network broken")
+		return []byte{}, err
+	}
+//	fmt.Println("WriteCmd Receive : ", ut.BytesToHex(buf[0:i]))
+	return buf[0:i], nil
 }
 
 const register0 = 40001
@@ -118,12 +151,12 @@ func BuildReadRequest(start int32, len int16)([]byte){
 	bsStart := ut.Int16ToBytes(int16(startR))
 	bsLen := ut.Int16ToBytes(len)
 	req := []byte{0x01, 0x03, bsStart[0], bsStart[1], bsLen[0], bsLen[1]}
-	csc := Crc16(req)
-	req = append(req, csc[1])
-	req = append(req, csc[0])
-	fmt.Println("Request is :", ut.BytesToHex(req))
+	req = AppendCrc(req)
+//	fmt.Println("Request is :", ut.BytesToHex(req))
 	return req
 }
+
+//func BuildWriteRequest(start int32, len int16)
 
 func (mConn *MConn)GetRegisterBytes(start int32, len int16)([]byte, error){
 	req := BuildReadRequest(start, len)
@@ -168,7 +201,7 @@ func (mConn *MConn)GetRegisters(mapValue map[string]interface{}, start int32, le
 		r := start + int32(i)
 		if mo, ok := MoMap[int32(r)];ok{
 			vBytes := bs[3+i*retLen:3+i*retLen+retLen]
-			fmt.Println("Read reg:", r, " ", ut.BytesToHex(vBytes))
+//			fmt.Println("Read reg:", r, " ", ut.BytesToHex(vBytes))
 			mapValue[mo.Key] = mo.GetValue(vBytes)
 		}else {
 			continue
@@ -194,8 +227,9 @@ func Crc16(bs []byte) []byte{
 	//	fmt.Println(fmt.Sprintf("%0x, %0x", buff.Bytes()[0], buff.Bytes()[1]))
 	return buff.Bytes()
 }
-
-func StartEngine(conn net.Conn)string{
-
-	return "success"
+func AppendCrc(req []byte)[]byte{
+	csc := Crc16(req)
+	req = append(req, csc[1])
+	req = append(req, csc[0])
+	return req
 }

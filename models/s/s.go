@@ -12,4 +12,7 @@ const(
 
 const(
 	Status = "status"
+	Operate = "operate"
+	Start = "start"
+	Stop = "stop"
 )

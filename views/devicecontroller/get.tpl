@@ -15,9 +15,9 @@
     <div class="bg-light lter b-b wrapper-md">
         <div class="row">
             <div class="col-sm-3 col-xs-6">设备: {{.DeviceName}}[ID:{{.DeviceId}}]</div>
-            <div class="pull-right m-r">当前状态:<span class="webo-c-param" name="gstat"></span></i>
-                <a class="btn btn-success btn-sm m-l-lg">启动</a>
-                <a class="btn btn-danger btn-sm">停止</a>
+            <div class="pull-right m-r">当前状态:<span id="gstat" class="webo-c-stat" name="gstat"></span></i>
+                <a class="btn btn-success btn-sm m-l-lg" id="startBtn">启动</a>
+                <a class="btn btn-danger btn-sm" id="stopBtn">停止</a>
                 <a class="btn btn-info btn-sm" id="btnShowPosition" data-toggle="collapse" data-target="#position"><i class="icon-pointer"></i>查看位置</a>
             </div>
         </div>
@@ -82,15 +82,15 @@
                     <div class="hbox b-t b-light">
                         <div class="m-l m-b m-t">
                             <span class="label text-base bg-primary pos-rlt"><i class="arrow right arrow-primary"></i>L1A</span>
-                            <span class="padder webo-c-tag-v" name="a1"></span><span>A</span>
+                            <span class="padder webo-c-tag-v" name="al1"></span><span>A</span>
                         </div>
                         <div class="m-l m-b m-t">
                             <span class="label text-base bg-primary pos-rlt"><i class="arrow right arrow-primary"></i>L2A</span>
-                            <span class="padder webo-c-tag-v" name="a2"></span><span>A</span>
+                            <span class="padder webo-c-tag-v" name="al2"></span><span>A</span>
                         </div>
                         <div class="m-l m-b m-t">
                             <span class="label text-base bg-primary pos-rlt"><i class="arrow right arrow-primary"></i>L3A</span>
-                            <span class="padder webo-c-tag-v" name="a3"></span><span>A</span>
+                            <span class="padder webo-c-tag-v" name="al3"></span><span>A</span>
                         </div>
                     </div>
                     <div class="hbox b-t b-light">
@@ -106,7 +106,7 @@
                     <div class="panel-heading text-center b-b"><h4>状态</h4></div>
                     <div class="panel-body">
                         <div class="" style="margin-bottom: 58px">
-                            <div class="webo-c-progress" name="flevel" data-max="100">
+                            <div class="webo-c-progress" name="flevel" data-max="100" data-min="0">
                                 <div class="">
                                     <span class="pull-right text-primary">%</span>
                                     <span class="pull-right text-primary webo-c-progress-v"></span>
@@ -116,7 +116,7 @@
                                     <div class="progress-bar bg-primary" data-toggle="tooltip" data-original-title="60%" style="width: 60%"></div>
                                 </div>
                             </div>
-                            <div class="webo-c-progress" name="opress" data-max="100">
+                            <div class="webo-c-progress" name="opress" data-max="100" data-min="0">
                                 <div class="">
                                     <span class="pull-right text-primary">Bar</span>
                                     <span class="pull-right text-primary webo-c-progress-v"></span>
@@ -126,7 +126,7 @@
                                     <div class="progress-bar bg-primary" data-toggle="tooltip" data-original-title="60%" style="width: 60%"></div>
                                 </div>
                             </div>
-                            <div class="webo-c-progress" name="flevel" data-max="100">
+                            <div class="webo-c-progress" name="etemp" data-max="120" data-min="-50">
                                 <div class="">
                                     <span class="pull-right text-primary">°C</span>
                                     <span class="pull-right text-primary webo-c-progress-v"></span>
@@ -136,7 +136,7 @@
                                     <div class="progress-bar bg-primary" data-toggle="tooltip" data-original-title="60%" style="width: 60%"></div>
                                 </div>
                             </div>
-                            <div class="webo-c-progress" name="vbty" data-max="60">
+                            <div class="webo-c-progress" name="vbty" data-max="50">
                                 <div class="">
                                     <span class="pull-right text-primary">V</span>
                                     <span class="pull-right text-primary webo-c-progress-v"></span>
@@ -150,7 +150,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
         <div class=" b-b">
             <div class="row text-center">
@@ -287,8 +286,47 @@ function showPostion(x, y){
 function setLocation(x, y){
     map.panTo(new BMap.Point(x, y), 15)
 }
-function setProgress(){
-
+var statusMap = {
+    16:"起始",
+    17:"未预备",
+    18:"预起动",
+    19:"起动中",
+    20:"间歇",
+    21:"起动中",
+    22:"运行中",
+    23:"已合闸",
+    24:"停机",
+    25:"停机",
+    26:"候命中",
+    27:"冷却中",
+    28:"应急手动",
+    29:"市电合闸",
+    30:"市电故障",
+    31:"市电故障",
+    32:"岛运行",
+    33:"市电回复",
+    34:"断路全分",
+    35:"不计时",
+    36:"MCB 合闸",
+    37:"恢复延时",
+    38:"市并时间",
+    39:"怠速运行",
+    40:"最低稳时",
+    41:"最高稳时",
+    42:"后冷却泵",
+    43:"ＧＣＢ开",
+    44:"停机阀",
+    45:"起动延时",
+    46:"(1Ph)",
+    47:"(3PD)",
+    48:"(3PY)",
+    49:"MRS 模式"
+}
+function getStatus(code){
+    if (code in statusMap){
+        return statusMap[code]
+    }
+    return "未联网"
 }
 function refreshData(){
     $.post("/device/params",
@@ -296,6 +334,9 @@ function refreshData(){
                 sn:"{{.DeviceId}}"
             },
             function(data,status){
+                gstat = data["gstat"]
+                $("#gstat").text(getStatus(gstat))
+
                 setChart(pChart, pOption, data["p"])
                 $(".webo-c-text-v").each(function(){
                     $el = $(this)
@@ -321,19 +362,48 @@ function refreshData(){
                 $(".webo-c-progress").each(function(){
                     $el = $(this)
                     $elv = $el.find(".webo-c-progress-v")
-                    value = data[$el.attr("name")]
-                    $elv.text(value)
+                    oValue = value = data[$el.attr("name")]
+
                     max = $el.data("max")
+                    min = $el.data("min")
+                    if (value > max){
+                        value = max
+                    }
+                    if (value < min){
+                        value = min
+                    }
                     rat = value *100/max + "%"
                     $progressBar = $el.find(".progress-bar")
                     $progressBar.width(rat)
                     $progressBar.attr("data-original-title", rat)
+                    if (oValue < -327){
+                        value = "#"
+                    }
+                    $elv.text(value)
                 })
             });
 }
 $(function(){
 //    showVChart()
 //    showAChart()
+    $("#startBtn").on("click", function(){
+        $.post("/device/operate", {
+                    sn:"{{.DeviceId}}",
+                    operate:"start"
+                },
+                function(data,status){
+
+                })
+    })
+    $("#stopBtn").on("click", function(){
+        $.post("/device/operate", {
+                    sn:"{{.DeviceId}}",
+                    operate:"stop"
+                },
+                function(data,status){
+
+                })
+    })
     $("#position").on("shown.bs.collapse", function(){
         showPostion(116.4821,35.7107)
     })
