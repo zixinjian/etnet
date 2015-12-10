@@ -3,9 +3,10 @@ package main
 import (
 	_ "etnet/routers"
 	"github.com/astaxie/beego"
-	"etnet/tcp"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/mattn/go-sqlite3"
+	"etnet/tcp/modbus"
+	"etnet/tcp/bds"
 )
 
 
@@ -16,7 +17,8 @@ func initDb() {
 }
 
 func main() {
-	go tcp.ServerRun()
+	go modbus.ServerRun()
+	go bds.ServerRun()
 	initDb()
 	beego.Run()
 }

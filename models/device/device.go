@@ -1,7 +1,7 @@
 package device
 import (
 	"wb/st"
-	"etnet/tcp"
+	"etnet/tcp/modbus"
 )
 
 
@@ -18,6 +18,6 @@ func GetDevices()[]Device{
 //}
 
 func SendCmd(sn int64, cmd string)string{
-	tcp.SendCmd(sn, cmd)
+	modbus.SendCmd(sn, cmd)
 	return st.Success
 }
