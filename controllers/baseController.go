@@ -1,5 +1,8 @@
 package controllers
-import "github.com/astaxie/beego"
+import (
+	"github.com/astaxie/beego"
+	"etnet/models/userMgr"
+)
 
 type BaseController struct {
 	beego.Controller
@@ -8,5 +11,9 @@ type BaseController struct {
 func (c *DeviceController) SendJson(jsonObject interface{}) {
 	c.Data["json"] = &jsonObject
 	c.ServeJson()
+}
+
+func (c *DeviceController) GetSessionUser()userMgr.User{
+	return c.GetSession(SessionUser).(userMgr.User)
 }
 

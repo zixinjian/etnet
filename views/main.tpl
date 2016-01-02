@@ -104,7 +104,7 @@
                             </ul>
                         </li>
                         <li>
-                            <a href="/device?sn=10001"  target="main" class="auto">
+                            <a href="/device?sn=2113994878"  target="main" class="auto">
                                 <i class="glyphicon-send text-success-lter"></i>
                                 <span>发电机组模拟</span>
                             </a>

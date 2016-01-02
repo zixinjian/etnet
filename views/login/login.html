@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Webo</title>
+    <meta name="description" content="管理系统" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <link rel="stylesheet" href="../../lib/app/css/app.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../lib/webo/css/ui.css">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="../../lib/html5shiv.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="app app-header-fixed ">
+    <div class="container w-xxl w-auto-xs" ng-controller="SigninFormController" ng-init="app.settings.container = false;">
+        <h2 class="text-center">山东华力管理系统</h2>
+        <div class="m-b-lg">
+            <form id="sign-in">
+                <div id="login-msg" class="text-danger wrapper text-center"></div>
+
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" class="form-control no-border input-block-level" data-validate="{required: true, messages:{required:'请输入用户名'}}" name="login_username" id="login_username" autocomplete="off" />
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" class="form-control no-border input-block-level" data-validate="{required: true, messages:{required:'请输入密码'}}" name="login_password" id="login_password" autocomplete="off" />
+                </div>
+                <button type="submit" class="btn btn-lg btn-primary btn-block" >登录</button>
+            </form>
+        </div>
+        <div class="text-center" style="margin-top: 100px">
+            <p>
+                <small class="text-muted">山东华力机电有限公司<br>&copy; 2015</small>
+            </p>
+        </div>
+    </div>
+</div>
+<script src="../../lib/app/js/app.min.js"></script>
+<script src="../../lib/jquery/jquery/validate/jquery.validate.js"></script>
+<script src="../../lib/jquery/jquery/jquery.form.js"></script>
+<script>
+    $(document).ready(function() {
+        if(self!=top){
+            top.location.href = "/login"
+            return
+        }
+        function showResponse(resp) {
+            if(resp.ret =="success"){
+                window.location.href="{{.redirectUrl}}";
+                return;
+            }
+            var result = "登录失败: " + resp.result
+            $("#login-msg").text(result);
+        }
+        // validate
+        $('#sign-in').validate({
+            submitHandler: function (form) {
+//                console.log("submitHandler")
+                $("#sign-in").ajaxSubmit({
+                    type: "post",
+                    url: "/",
+                    success: showResponse
+                });
+            }
+        })
+    })
+</script>
+</body>
+</html>

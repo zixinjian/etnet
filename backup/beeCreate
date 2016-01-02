@@ -1,0 +1,3 @@
+
+
+bee generate scaffold user -fields="sn:string,name:string,user:string,company:string,department:string,role:string,flag:string,createtime:string,creater:string" -driver="sqlite" -conn="E:\gopath\src\etnet\data\db\main"

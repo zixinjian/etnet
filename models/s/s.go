@@ -16,3 +16,7 @@ const(
 	Start = "start"
 	Stop = "stop"
 )
+
+const(
+	User = "user"
+)

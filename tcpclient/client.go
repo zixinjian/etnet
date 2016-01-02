@@ -6,9 +6,9 @@ import (
 )
 
 const (
-//	addr = "p2x.pub:9171"
+	addr = "p2x.pub:9171"
 //	addr = "localhost:9171"
-	addr = "localhost:9172"
+//	addr = "localhost:9172"
 //	addr = "p2x.pub:9172"
 )
 
@@ -20,7 +20,8 @@ func main() {
 	}
 	fmt.Println("已连接服务器")
 	defer conn.Close()
-	bdsClient(conn)
+//	bdsClient(conn)
+	modbusClient(conn)
 }
 //var ms = map[string][]byte{
 //	"01030000000ec40e":[]byte{01,03,1c,00,00,00,00,00,00,00,00,00000000000000000000000000000000000000005ca5",
